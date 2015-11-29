@@ -1,7 +1,7 @@
 # compilib
 a small utility library for compiling java source into *.class objects at runtime. primarily aimed at writing unit tests:
 ```java
-Map<String, String> sources = new HashMap<>();
+Set<String> sources = new HashSet<>();
 sources.put(
         "package a.b;\n" +
         "public interface Consts {\n" +
