@@ -22,8 +22,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by Radai Rosenblatt
@@ -31,14 +32,26 @@ import java.util.Map;
 public class CompilibTest {
 
     @Test
+    public void testSingleClass() throws Exception {
+        String source =
+                "package a.b;\n" +
+                "public interface Consts {\n" +
+                "    int A = 10;\n" +
+                "}";
+        Class<?> clazz = Compilib.compile(source);
+        Assert.assertNotNull(clazz);
+        Assert.assertEquals(10, ReflectionTestUtils.getField(clazz, "A"));
+    }
+
+    @Test
     public void test2Classes() throws Exception {
-        Map<String, String> sources = new HashMap<>();
-        sources.put("a.b.Consts",
+        Set<String> sources = new HashSet<>();
+        sources.add(
                 "package a.b;\n" +
                 "public interface Consts {\n" +
                 "    int A = 10;\n" +
                 "}");
-        sources.put("a.c.SomeEnum",
+        sources.add(
                 "package a.c;\n" +
                 "import a.b.Consts;\n" +
                 "public enum SomeEnum {\n" +
