@@ -19,3 +19,19 @@ sources.put(
         "}");
 Map<String, Class<?>> compiledClasses = Compilib.compile(sources);
 ```
+# how to use in your project
+add the [jitpack.io](https://jitpack.io/) maven repository to your project, like so:
+```xml
+<repository>
+    <id>jitpack.io</id>
+    <url>https://jitpack.io</url>
+</repository>
+```
+then add a dependency on compilib:
+```xml
+<dependency>
+    <groupId>com.github.radai-rosenblatt</groupId>
+    <artifactId>compilib</artifactId>
+    <version>1.0</version>
+</dependency>
+```
