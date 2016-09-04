@@ -25,15 +25,20 @@ import java.util.Map;
  */
 public class BlobLoader extends ClassLoader {
     private final Map<String, ClassBlob> blobs;
+    private final Map<String, ClassBlob> surpriseBlobs;
 
-    public BlobLoader(ClassLoader parent, Map<String, ClassBlob> blobs) {
+    public BlobLoader(ClassLoader parent, Map<String, ClassBlob> blobs, Map<String, ClassBlob> surpriseBlobs) {
         super(parent);
         this.blobs = blobs;
+        this.surpriseBlobs = surpriseBlobs;
     }
 
     @Override
     protected Class<?> findClass(String fqcn) throws ClassNotFoundException {
         ClassBlob blob = blobs.get(fqcn);
+        if (blob == null) {
+            blob = surpriseBlobs.get(fqcn);
+        }
         if (blob != null) {
             byte[] byteCode = blob.getByteCode();
             return defineClass(fqcn, byteCode, 0, byteCode.length);

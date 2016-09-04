@@ -23,7 +23,9 @@ import javax.tools.ForwardingJavaFileManager;
 import javax.tools.JavaFileManager;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by Radai Rosenblatt
@@ -31,12 +33,18 @@ import java.util.Map;
 public class FileManager extends ForwardingJavaFileManager<JavaFileManager> {
 
     private final Map<String, ClassBlob> blobs;
+    private final Map<String, ClassBlob> surpriseBlobs = new HashMap<>();
     private final BlobLoader blobLoader;
+    private boolean allowSurpriseBlobs = false;
 
     public FileManager(JavaFileManager fileManager, Map<String, ClassBlob> blobs) {
         super(fileManager);
         this.blobs = blobs;
-        this.blobLoader = new BlobLoader(Thread.currentThread().getContextClassLoader(), blobs);
+        this.blobLoader = new BlobLoader(Thread.currentThread().getContextClassLoader(), blobs, surpriseBlobs);
+    }
+
+    public void setAllowSurpriseBlobs(boolean allowSurpriseBlobs) {
+        this.allowSurpriseBlobs = allowSurpriseBlobs;
     }
 
     @Override
@@ -45,10 +53,17 @@ public class FileManager extends ForwardingJavaFileManager<JavaFileManager> {
         if (blob != null) {
             return blob;
         }
-        throw new IllegalStateException("request unknown class " + className + " for output. known classes: " + blobs.keySet());
+        if (allowSurpriseBlobs) {
+            return surpriseBlobs.computeIfAbsent(className, ClassBlob::new);
+        }
+        throw new IllegalStateException("requested unexpected class " + className + " for output. known classes: " + blobs.keySet());
     }
 
     public Class<?> getCompiledClass(String fqcn) throws ClassNotFoundException {
         return blobLoader.loadClass(fqcn);
+    }
+
+    public Set<String> getSurpriseFqcns() {
+        return surpriseBlobs.keySet();
     }
 }

@@ -22,6 +22,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -68,5 +69,51 @@ public class CompilibTest {
         Object y = ReflectionTestUtils.getField(enumClass, "Y");
         Assert.assertNotNull(y);
         Assert.assertEquals(10, ReflectionTestUtils.getField(y, "value"));
+    }
+
+    @Test
+    public void testInnerClass() throws Exception {
+        String source =
+                "package a;\n" +
+                "public class SomeClass$ {\n" +
+                "    public int a() {\n" +
+                "        return 1;\n" +
+                "    }\n" +
+                "    private class SomeInnerClass {\n" +
+                "        public class SomeInnerInnerClass {\n" +
+                "            public int a() {\n" +
+                "                return 4;\n" +
+                "            } \n" +
+                "        }\n" +
+                "        public int a() {\n" +
+                "            return 2;\n" +
+                "        }\n" +
+                "    }\n" +
+                "    public static class SomeStaticInnerClass {\n" +
+                "        public int a() {\n" +
+                "            return 3;\n" +
+                "        }\n" +
+                "    }\n" +
+                "}";
+        Map<String, Class<?>> classes = Compilib.compile(Collections.singletonList(source));
+        Assert.assertEquals(4, classes.size());
+    }
+
+    @Test
+    public void testSurpriseInnerClass() throws Exception {
+        //see http://stackoverflow.com/questions/17006585/why-does-classname1-class-generate-in-this-situation
+        String source =
+                "public final class Test {\n" +
+                "     static final class TestHolder {\n" +
+                "         private static final Test INSTANCE = new Test();\n" +
+                "     }     \n" +
+                "     private Test() {}\n" +
+                "     public static Test getInstance() {\n" +
+                "         return TestHolder.INSTANCE;\n" +
+                "     }\n" +
+                "}";
+        Map<String, Class<?>> classes = Compilib.compile(Collections.singletonList(source));
+        Assert.assertEquals(3, classes.size());
+        Assert.assertTrue(classes.containsKey("Test$1"));
     }
 }

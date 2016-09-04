@@ -20,31 +20,42 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.github.radai-rosenblatt</groupId>
+    <parent>
+        <groupId>net.radai</groupId>
+        <artifactId>parent</artifactId>
+        <version>1.0</version>
+    </parent>
+
+    <groupId>net.radai.compilib</groupId>
     <artifactId>compilib</artifactId>
-    <version>1.0</version>
+    <version>0.1-SNAPSHOT</version>
 
     <name>compilib</name>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <roaster.version>2.17.2.Final</roaster.version>
-    </properties>
+    <licenses>
+        <license>
+            <name>The GNU Lesser General Public License, version 3.0</name>
+            <url>https://opensource.org/licenses/LGPL-3.0</url>
+        </license>
+    </licenses>
 
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <configuration>
-                        <source>1.8</source>
-                        <target>1.8</target>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
+    <developers>
+        <developer>
+            <name>Radai Rosenblatt</name>
+            <email>radai.rosenblatt@gmail.com</email>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:https://github.com/radai-rosenblatt/compilib.git</connection>
+        <developerConnection>scm:git:https://github.com/radai-rosenblatt/compilib.git</developerConnection>
+        <url>https://github.com/radai-rosenblatt/compilib</url>
+    </scm>
+
+    <properties>
+        <roaster.version>2.19.0.Final</roaster.version>
+        <spring.version>4.3.2.RELEASE</spring.version>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -66,7 +77,14 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>4.2.3.RELEASE</version>
+            <version>${spring.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <!-- for some reason spring-test needs this yet doesnt declare a dep on it -->
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+            <version>${spring.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
